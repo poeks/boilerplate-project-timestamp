@@ -1,5 +1,6 @@
 // server.js
 // where your node app starts
+const PORT = 3001;
 
 // init project
 var express = require('express');
@@ -24,9 +25,23 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+app.get("/api/:date?", function (req, res) {
+  console.log('these are the params!', req.params)
+  const { dateParam } = req.params;
+  const INVALID_DATE = 'Invalid Date';
+  const date = dateParam ? new Date(dateParam) : new Date();
+  if (date.toString() === INVALID_DATE) {
+    // else return error -> see REST best practices
+    res.status(400).send({'error': `Invalid Date`})
+  } else {
+    res.status(200).send({
+      'unix': date.valueOf(),
+      'utc': date.toUTCString(),
+    })
+  }
+})
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
